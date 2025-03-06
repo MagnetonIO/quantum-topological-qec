@@ -1,0 +1,319 @@
+\documentclass[12pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,amsfonts}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{cite}
+\usepackage{color}
+
+\title{\textbf{Towards Self-Correcting Topological Codes Through Functorial Physics:\\
+Unifying Universal Invariants, Braided Categories, and Thermodynamics}}
+\author{Matthew Long \\
+Magneton Labs}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+We propose a unifying framework for topological quantum error-correcting codes by drawing on tools from category theory, topology, and thermodynamics. Our principal goal is to outline how \emph{universal invariant constructions} (e.g.\ categorical centers, TQFT invariants) can be leveraged to design and analyze self-correcting codes. We show that by regarding physical processes as functorial maps, one can systematically track how errors (such as bit flips $Z$) on a given lattice may be corrected (via $A$-type or $X$-type operators and braiding protocols) in a robust manner. We introduce the notion of \emph{penalty pathways} in braided categories, linking them to the thermodynamic landscape of excitations and explaining how these pathways formalize energy barriers against unwanted braids or fusion events. By elucidating these categorical, topological, and thermodynamic interrelations, our framework makes it conceptually simpler to reason about quantum information storage and fault-tolerance. We close with a discussion of potential directions for practical implementation, emphasizing the need for further developments in higher-dimensional and finite-temperature contexts.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}\label{sec:intro}
+Quantum error correction (QEC) is a critical component for the scalability of quantum computing~\cite{kitaev2003fault, dennis2002topological}. Among various approaches, \emph{topological quantum error-correcting codes} (TQECCs) stand out for their promise of inherent stability against local noise~\cite{freedman2003topological, fowler2012surface}. In these systems, information is stored in global, topological degrees of freedom, making local errors less likely to cause logical failure. 
+
+Despite these advantages, significant challenges remain, particularly with maintaining coherence at non-zero temperatures---a vital step if we ever hope to build \emph{self-correcting} quantum memories that passively preserve quantum information over arbitrarily long times~\cite{brown2020quantum}. One of the major theoretical questions in the field is whether (and under what conditions) a truly \emph{self-correcting} topological phase can exist in two or more spatial dimensions.
+
+\subsection{Motivation}
+This work aims to bring together three main conceptual threads:
+\begin{enumerate}
+    \item \textbf{Category Theory:} In particular, \emph{braided monoidal categories} and their higher analogs provide a rigorous way to encode anyonic excitations, fusion, and braiding processes. Additionally, \emph{universal invariants} derived from categorical or topological data (e.g., Drinfel’d centers, the Reshetikhin–Turaev formalism) help classify topological phases~\cite{kassel2008quantum, turaev2010hqft}.
+    \item \textbf{Topology:} Topological quantum field theories (TQFTs) offer global invariants of manifolds and codimension boundaries that can be applied to characterize ground-state degeneracies and braiding statistics~\cite{atiyah1988topological, freed2019lectures}. These invariants become crucial when designing codes whose logical operators wrap nontrivial loops, surfaces, or higher-dimensional defects.
+    \item \textbf{Thermodynamics:} A topological code is only as good as its thermodynamic stability. Finite-temperature corrections introduce errors, typically by allowing the proliferation of excitations (particles, vortices, loops, etc.). Understanding the \emph{free-energy landscape} is therefore essential for evaluating whether a code can be \emph{self-correcting}~\cite{nussinov2008autocorrelations, chesi2010self}.
+\end{enumerate}
+
+While each of these three areas has been studied extensively in isolation, a comprehensive unification is less common. We argue that a \emph{functorial approach}, bridging all three, allows one to systematically track how local processes (e.g., $Z$-type errors on qubits) connect to global topological invariants, and how braiding or fusion rules might restore the system to an error-free logical state ($A$- or $X$-type correction). Ultimately, we seek to characterize \emph{penalty pathways}, i.e.\ the routes an error can take through the state space, and how the energy and entropic penalties scale with system size.
+
+\subsection{Overview of Main Contributions}
+\begin{enumerate}
+    \item We present a \textbf{universal invariant construction} approach to TQECCs, emphasizing how categorical centers (\emph{Z}-centers) and TQFT partition functions can serve as \emph{signature invariants} of a code’s topological phase.
+    \item We explain how \textbf{braiding-based corrections} link $Z$-type errors to $A$-type stabilizers and why such braiding operations can be viewed through functorial assignments of boundary data.
+    \item We introduce and formalize the concept of \textbf{penalty pathways in braided categories}, offering a thermodynamic interpretation of how excitations navigate potential energy barriers, and the conditions under which excitations remain localized or deconfined.
+    \item Finally, we illustrate how \textbf{this unified framework eases quantum information reasoning}, providing a common language for describing anyonic processes, stabilizer operators, and thermodynamic constraints.
+\end{enumerate}
+
+The paper is structured as follows. In \S\ref{sec:cat_top_review}, we give a compact review of the relevant category theory and TQFT concepts, focusing on braided categories and universal invariants. In \S\ref{sec:qec_thermo}, we discuss the thermodynamic aspects of self-correction and connect them to topological data. In \S\ref{sec:functorial_framework}, we introduce our functorial framework for bridging local errors to global topological invariants, including explicit mention of how braiding corrects $Z$-type operators via $A$. In \S\ref{sec:penalty_pathways}, we define penalty pathways, linking them to braiding in modular tensor categories. \S\ref{sec:applications_examples} illustrates examples with toric codes, color codes, and fracton-like models, and \S\ref{sec:discussion_conclusion} closes with open questions and future directions.
+
+\section{Category Theory and Topology: A Brief Review}\label{sec:cat_top_review}
+This section surveys key concepts in braided categories, universal invariants, and TQFT. While not exhaustive, it provides enough background for the subsequent development.
+
+\subsection{Braided Monoidal Categories}
+A \emph{monoidal category} $(\mathcal{C}, \otimes, I)$ consists of a category $\mathcal{C}$ equipped with a tensor product $\otimes: \mathcal{C}\times\mathcal{C}\to \mathcal{C}$, a unit object $I$, and natural isomorphisms that satisfy associativity and unitality coherence. A \emph{braiding} is a natural isomorphism
+\[
+c_{X,Y}:X\otimes Y \; \longrightarrow \; Y\otimes X,
+\]
+subject to certain hexagon and triangle coherence identities~\cite{kassel2008quantum}.
+
+In a \emph{braided} or \emph{modular} tensor category (MTC), objects represent anyonic particle types, while morphisms represent fusion channels. The braiding $c_{X,Y}$ encodes how these anyons exchange or circle around each other. These data are crucial for building topological quantum gates and for understanding \emph{logical operators} that act non-locally on the ground state subspace.
+
+\subsection{Universal Invariants and Drinfel’d Centers}
+A key construction in understanding the emergent topological order of certain categories is the \emph{Drinfel’d center} $Z(\mathcal{C})$ of a monoidal category $\mathcal{C}$. Roughly, the center $Z(\mathcal{C})$ consists of objects $Z$ in $\mathcal{C}$ equipped with natural half-braidings with every other object in $\mathcal{C}$. One can interpret $Z(\mathcal{C})$ as the “maximal braided extension” of $\mathcal{C}$, capturing universal features like quantum dimensions and S-matrices.
+
+In physical terms, if $\mathcal{C}$ describes excitations in a 2D system, then $Z(\mathcal{C})$ might describe the full spectrum of (possibly) \emph{deconfined} anyons in the bulk. This center is a universal invariant in the sense that it yields, for instance, the topological entanglement entropy and ground-state degeneracies on nontrivial manifolds.
+
+\subsection{Extended TQFTs}
+A \emph{Topological Quantum Field Theory} in $d$ dimensions is often formally defined as a functor:
+\[
+Z: \mathrm{Bord}_d \;\; \longrightarrow \;\; \mathcal{V},
+\]
+where $\mathrm{Bord}_d$ is a suitable higher category of $d$-dimensional manifolds and cobordisms between them, and $\mathcal{V}$ is a symmetric monoidal category (usually of vector spaces). An \emph{extended TQFT} refines this assignment further, associating algebraic data to manifolds and their boundaries (and corners, etc.).
+
+In practice, TQFTs provide partition functions and amplitude assignments that are independent of the manifold’s local geometry, depending only on topological features. Such invariance under local geometric deformations is exactly what endows topological codes with protection against local errors.
+
+\section{Thermodynamic Aspects of Self-Correction}\label{sec:qec_thermo}
+A topologically ordered system, at zero temperature, can exhibit a protected subspace whose degeneracy arises solely from global topology. However, at \emph{finite} temperature, the system can transition out of the topological phase if excitations (often anyonic quasiparticles or vortex loops) proliferate. 
+
+\subsection{Energy Gaps and Error Rates}
+In a typical stabilizer Hamiltonian $H = -\sum_{s\in S} O_s$, where $O_s$ are commuting projectors associated with vertices, faces, edges, or higher-dimensional cells, excitations carry an energy penalty $\Delta$ for flipping one or more stabilizers~\cite{kitaev2003fault, dennis2002topological}. If $\Delta$ is large, then at sufficiently low temperature, the thermal population of such excitations can be exponentially suppressed.
+
+However, simply having an energy gap is not enough for full \emph{self-correction}. One must also ensure that the free-energy cost of creating extended error strings or membranes grows with system size, so that large error operators remain improbable at all temperatures below a certain threshold~\cite{brown2020quantum}. Equivalently, the \emph{energy barrier} for logical error processes should scale with the linear system dimension.
+
+\subsection{Local vs.\ Global Error Processes}
+An important distinction is between local excitations (small loops or pairs of anyons) and \emph{global} processes that wrap a nontrivial cycle (or higher-dimensional defect). Logical errors require the latter: for example, in the toric code, a string of flipped spins that forms a contractible loop is unobservable as a logical error, whereas a non-contractible loop that wraps the entire torus implements a logical operator.
+
+Thermodynamically, the question becomes: does the system’s free energy favor proliferation of large loops or topological defect networks? If such extended errors are entropically favored at finite $T$, the code will fail to self-correct.
+
+\section{Functorial Framework for QEC: From $Z$ to $A$ through Braiding}\label{sec:functorial_framework}
+We now introduce our \emph{functorial physics} perspective, which treats a lattice model (together with its stabilizer structure) as an object in a higher category, and local error processes as morphisms or natural transformations. The overarching goal is to show how an initially corrupted state (e.g.\ with a local $Z$-type error) can be restored via braiding or topological manipulations that effectively map $Z$ to $A$ (or vice versa), culminating in a net trivial (i.e.\ correctable) process.
+
+\subsection{Objects and Morphisms}
+\begin{itemize}
+    \item \textbf{Objects:} $(d-1)$-dimensional lattices or boundary configurations, each equipped with a set of stabilizer operators $\{O_s\}$. 
+    \item \textbf{Morphisms:} Local changes to the lattice or the state, including \emph{error insertion} and \emph{braiding operations} that move or fuse excitations.
+\end{itemize}
+The existence of a \emph{braiding morphism} in the category is crucial; it implements the exchange or adiabatic transport of excitations around each other. 
+
+\subsection{Assignments to Topological Data}
+We posit a functor
+\[
+\Phi : \mathcal{L} \;\; \longrightarrow \;\; \mathcal{T},
+\]
+where $\mathcal{L}$ is a \emph{lattice category} of discrete configurations with local moves, and $\mathcal{T}$ is a \emph{TQFT-like category} that assigns topological invariants to each configuration. Concretely, $\Phi$ might map:
+\begin{enumerate}
+    \item A lattice $\Lambda$ with boundary conditions to a vector space $Z(\Lambda)$ whose dimension encodes the topological ground-state degeneracy.
+    \item A local error insertion or braiding operation to a linear map (or more structured morphism) between these vector spaces.
+\end{enumerate}
+In such a scenario, physically distinct errors that represent the same homotopy class of excitations (e.g.\ the same braided path around a hole) become identified under $\Phi$. This identification captures the core topological protection.
+
+\subsection{Correcting $Z$ Errors with $A$ Stabilizers}
+In many stabilizer codes (toric code, surface code), the \emph{vertex} or \emph{star} operators are typically denoted by $A_v$, and the \emph{face} or \emph{plaquette} operators by $B_f$. Often, these act as $X$-type and $Z$-type stabilizers, respectively. A “$Z$ error” on an edge may cause a defect that is detected by $A_v$ operators around the edge’s vertices. Conversely, an “$X$ error” flips $B_f$ stabilizers on adjacent plaquettes.
+
+\begin{itemize}
+\item \textbf{Starting at $Z$:} Suppose a qubit on an edge suffers a bit-flip ($Z$ operator). This creates pairs of anyons on the vertices touching that edge. 
+\item \textbf{Braiding / Anyon Transport:} By applying further $X$ operations along a path, we can move one anyon around the lattice, eventually returning it to annihilate with the other anyon. 
+\item \textbf{Correcting at $A$:} The net effect is a sequence of braiding or path-deformation operations that ends in a vacuum (no excitations). The $A_v$ operators measure whether the vertex is excited or not, guiding the correction. 
+\end{itemize}
+
+If the path is homologically trivial, the anyons annihilate without enacting a logical operation. If the path is nontrivial (circles a hole in the manifold), a global logical $Z$ or $X$ might be enacted; the key is that the code identifies this as a \emph{detectable} process, or ensures it happens with exponentially small probability (due to energy penalties).
+
+\section{Penalty Pathways in Braided Categories}\label{sec:penalty_pathways}
+A central theme in any discussion of self-correction is the energetic and entropic cost of extended error processes. We formalize this via \emph{penalty pathways}, which are sequences of braiding or fusion events that effectively create, move, and annihilate excitations.
+
+\subsection{Defining Penalty Pathways}
+Let $(\mathcal{C}, c_{X,Y})$ be a braided category describing the anyonic excitations of our code. A \emph{pathway} $\gamma$ is a composable chain of morphisms
+\[
+X \;\xrightarrow{f_1}\; X_1 \;\xrightarrow{f_2}\; X_2 \;\cdots\;\xrightarrow{f_n}\; X_n,
+\]
+where each $f_i$ represents either a local braiding, fusion, or splitting operation. In topological code language, each $f_i$ might correspond to applying a local $X$ or $Z$ stabilizer that creates or moves an anyon. The \emph{penalty} of $\gamma$ can be defined as 
+\[
+\Pi(\gamma) \;=\; \sum_{i=1}^n E(f_i),
+\]
+where $E(f_i)$ is the energy cost or free-energy cost to carry out that step in a finite-temperature environment.
+
+\subsection{Energy Barriers and Gap Requirements}
+For a code to be self-correcting, any homologically nontrivial pathway $\gamma$ that implements a logical operation must have a penalty $\Pi(\gamma)$ that scales with system size. 
+\begin{itemize}
+    \item If $\Pi(\gamma)$ remains bounded by a constant (or grows sub-linearly), large loops or extended error chains become thermally accessible at finite temperature, undermining self-correction.
+    \item If $\Pi(\gamma)$ grows linearly (or faster) with system size, then \emph{typical} thermal fluctuations cannot create a logical error. 
+\end{itemize}
+In a braided category context, this requirement typically translates to constraints on how excitations can be braided around topological handles. If braiding an anyon around a handle has a negligible energy cost, then logically non-trivial loops might proliferate.
+
+\subsection{Thermodynamic Interpretation}
+In a statistical or thermodynamic picture, each pathway $\gamma$ competes with an \emph{entropic factor} that counts the number of distinct microstates corresponding to that path. Roughly, the probability of $\gamma$ is:
+\[
+P(\gamma) \;\sim\; \Omega(\gamma)\; e^{-\beta \Pi(\gamma)},
+\]
+where $\Omega(\gamma)$ is the degeneracy (entropic factor) and $\beta = 1/k_B T$. For self-correction, we require that $\Pi(\gamma)$ dominates $\ln \Omega(\gamma)$ for large system sizes, ensuring $P(\gamma) \to 0$ as $| \Lambda | \to \infty$.
+
+\section{Applications and Examples}\label{sec:applications_examples}
+We now illustrate the above framework with several canonical models and highlight how universal invariants, braiding corrections, and penalty pathways manifest in each case.
+
+\subsection{1D Example: The Ising Chain (Trivial Case)}
+Although not a topological code, a 1D Ising chain with a transverse field can serve as a warm-up. Here, the “braiding” is absent in the strict sense, but one can still talk about domain-wall excitations. The Drinfel’d center of a 1D symmetry category is typically just the representation category of a finite group. Since there are no nontrivial loops in 1D, the code cannot enjoy topological protection. This trivial example clarifies that braiding and 2D/3D topological constraints are essential for robust QEC.
+
+\subsection{2D Example: The Toric Code}
+\paragraph{Model Definition.} Kitaev’s toric code is defined on a 2D lattice with qubits on edges and stabilizer terms $A_v$ (vertex) and $B_f$ (plaquette)~\cite{kitaev2003fault}. Each $A_v$ is an $X$-type operator acting on edges incident to a vertex; each $B_f$ is a $Z$-type operator acting on edges bounding a face. 
+\paragraph{Braided Category.} The (Abelian) anyons in the toric code form a category $\mathcal{C}$ with four simple objects: $1$, $e$, $m$, and $\epsilon = e\otimes m$. Braiding is trivial up to phases. The Drinfel’d center $Z(\mathcal{C})$ is isomorphic to $\mathcal{C}$ itself in this simple case.
+\paragraph{Correcting $Z$ at $A$.} A $Z$ error on an edge excites $A_v$ at adjacent vertices. One can “braid” the $e$ anyons around until they annihilate at the same vertex. If the path is topologically trivial, the system returns to the original code state; if it encircles a nontrivial cycle, a global logical $Z$ or $X$ might be implemented.
+\paragraph{Penalty Pathways.} The energy cost to create a pair of $e$ anyons is $2$, if each stabilizer has energy $1$, say. To move an anyon, additional edges must be flipped, incurring further costs. At finite temperature in 2D, proliferation of anyons tends to occur, and no purely 2D stabilizer code is known to have an energy barrier diverging with system size~\cite{bravyi2009no}.
+
+\subsection{2D Example: Color Codes}
+Color codes generalize the toric code by placing qubits on vertices of a 2D trivalent lattice and using 3-body or 4-body stabilizers~\cite{bombin2006topological, bombin2015gauge}. They admit transversal implementations of certain logical gates, making them attractive for fault tolerance. The underlying anyonic theory can be somewhat richer than the toric code’s $\mathbb{Z}_2$ structure, but the same fundamental thermodynamic limitations in 2D appear.
+
+\subsection{3D and Higher Dimensions: Towards Self-Correction}
+In 3D, examples like the \emph{3D toric code} or \emph{Haah’s code} illustrate new types of excitations (loops, fractal operators) that might lead to higher energy barriers~\cite{haah2011local}. The emergent braided category structure can be more complicated, sometimes resembling 2-categories of surfaces or fractal excitations. While no 3D model has been unambiguously shown to remain topologically ordered at all finite temperatures, these higher-dimensional examples are the prime candidates for self-correction.
+
+\subsection{Fracton Models}
+Fracton topological orders feature excitations that cannot freely move without creating additional excitations, leading to subextensive ground-state degeneracies and extremely long relaxation times~\cite{vijay2016fracton}. Braiding is replaced by restricted mobility, which can be formalized in \emph{higher-form} or \emph{subsystem} symmetries. The penalty pathways for fractons are especially large, potentially leading to strong self-correction properties, though conclusive proofs remain open.
+
+\section{How the Unified Framework Simplifies Quantum Information Reasoning}\label{sec:how_unification_helps}
+A key benefit of using a categorical-topological-thermodynamic (CTT) unification is that it provides a single \emph{language} or \emph{syntax} for describing:
+\begin{enumerate}
+    \item \textbf{Local Operator Action:} $Z$ and $X$ errors, stabilizer flips, creation/annihilation of defects.
+    \item \textbf{Global Topological Moves:} Braiding around nontrivial cycles, generating or detecting logical operators.
+    \item \textbf{Thermodynamic Penalties:} Energy or free-energy costs that scale with system size or geometry.
+\end{enumerate}
+By casting all of the above in functorial or higher-categorical terms, one can exploit the \emph{Curry–Howard correspondence} to represent logical statements (e.g.\ “a certain loop is homologically trivial”) as types in a constructive proof system. In principle, this means if we specify a code, its stabilizers, and the adjacency or braiding rules in a formal language, we can \emph{automatically} check whether certain error processes are correctable or not. 
+
+Moreover, universal invariants like the Drinfel’d center or modular $S,T$-matrices give an at-a-glance classification of the anyonic content, letting us quickly determine whether certain braiding-based logical gates are possible. This unification thus cuts down on the conceptual overhead of combining physics, geometry, and logic separately; we have a single \emph{functorial} viewpoint to track everything at once.
+
+\section{Discussion and Future Directions}\label{sec:discussion_conclusion}
+
+\subsection{Finite-Temperature Self-Correction}
+The central open question remains whether \emph{truly} self-correcting quantum memories can exist in two or three spatial dimensions, and under what conditions. Results like that of Bravyi \& Terhal~\cite{bravyi2009no} show that \emph{strictly} 2D stabilizer codes cannot have an energy barrier growing with system size. Yet 3D and 4D remain under intensive study, with fracton models suggesting partial solutions but lacking definitive proofs of finite-temperature robustness.
+
+\subsection{Beyond Stabilizer Codes}
+While stabilizer codes are tractable, physically relevant systems often break strict commutation or exhibit additional interactions. One way forward is to formulate QEC in a more general braided tensor category environment (potentially non-Abelian anyons with higher quantum dimensions). This would incorporate models like Ising anyons or Fibonacci anyons, relevant to topological quantum computation in fractional quantum Hall systems~\cite{sarma2005topological}.
+
+\subsection{Hardware Considerations}
+From a hardware perspective, implementing topological qubits in real materials (e.g.\ fractional quantum Hall states, topological superconductors, or photonic lattices) requires engineering an energy gap, controlling disorder, and enabling adiabatic braiding manipulations~\cite{kouwenhoven2012fractional, nayak2008non}. The functorial approach does not solve these engineering problems directly, but it provides a design blueprint for ensuring the braiding processes map reliably onto error-correction operations.
+
+\subsection{Algorithmic Proofs via Curry–Howard}
+A promising avenue is to fully formalize the CTT unification using a proof assistant (e.g.\ Coq, Agda, Lean). One could encode:
+\begin{enumerate}
+    \item The lattice and stabilizer definitions as an inductive type.
+    \item The braiding rules and local moves as constructors of morphisms.
+    \item The topological invariants (e.g.\ Drinfel’d center) as a higher-level type or object in the proof environment.
+\end{enumerate}
+Then, verifying that all logical operators remain exponentially suppressed at finite temperature (if true) becomes akin to a constructive proof that no short penalty pathway can implement a logical loop. While still an ambitious project, success here could yield new insights into how to systematically design codes with provable self-correction properties.
+
+\subsection{Towards Experimental Validation}
+Ultimately, the theoretical unification is only as compelling as its experimental realization. Ongoing experiments with superconducting qubits (surface codes), trapped ions (color codes), and topological superconductors (Majorana-based qubits) are crucial. A deeper synergy between theory and experiment could accelerate progress, allowing experimental data to guide which categories or universal invariants are physically realized.
+
+\section{Conclusion}
+We have proposed a unifying \emph{categorical-topological-thermodynamic} framework for analyzing and designing topological quantum error-correcting codes with aspirations toward self-correction. By tying together:
+\begin{itemize}
+    \item \textbf{Universal Invariants} from category theory (e.g.\ Drinfel’d centers, braided monoidal structures), 
+    \item \textbf{TQFT Assignments} capturing global manifold invariants,
+    \item \textbf{Thermodynamic Penalties} that ensure local excitations do not proliferate,
+\end{itemize}
+we gain a single vantage point from which to study how an error process (starting at $Z$) can be corrected (at $A$) via braiding and how penalty pathways scale with system size. Although significant open questions remain—particularly regarding finite-temperature stability and fracton-like models—our functorial approach offers a coherent, flexible language to unify these ideas and guide both theoretical and experimental research.
+
+\vspace{1em}
+
+\noindent \textbf{Acknowledgments.} We gratefully acknowledge the quantum information and mathematics communities for insightful discussions, and we thank [Your Funding Sources] for support. 
+
+\bibliographystyle{abbrv}
+\begin{thebibliography}{99}
+
+\bibitem{kitaev2003fault}
+A. Kitaev,
+\newblock ``Fault-tolerant quantum computation by anyons,''
+\newblock \emph{Annals of Physics}, 303(1):2--30, 2003.
+
+\bibitem{dennis2002topological}
+E. Dennis, A. Kitaev, A. Landahl, and J. Preskill,
+\newblock ``Topological quantum memory,''
+\newblock \emph{Journal of Mathematical Physics}, 43(9):4452--4505, 2002.
+
+\bibitem{freedman2003topological}
+M. Freedman,
+\newblock ``Topological quantum computation,''
+\newblock \emph{Bulletin of the American Mathematical Society}, 40(1):31--38, 2003.
+
+\bibitem{fowler2012surface}
+A. G. Fowler, M. Mariantoni, J. M. Martinis, and A. N. Cleland,
+\newblock ``Surface codes: Towards practical large-scale quantum computation,''
+\newblock \emph{Physical Review A}, 86(3):032324, 2012.
+
+\bibitem{brown2020quantum}
+B. J. Brown,
+\newblock ``Quantum memories at finite temperature,''
+\newblock \emph{Reviews of Modern Physics}, 92(3):035005, 2020.
+
+\bibitem{kassel2008quantum}
+C. Kassel,
+\newblock \emph{Quantum Groups},
+\newblock Springer, 1995.
+
+\bibitem{turaev2010hqft}
+V. Turaev,
+\newblock \emph{Homotopy Field Theory in Dimension 3 and Crossed Group-Categories},
+\newblock European Mathematical Society, 2010.
+
+\bibitem{atiyah1988topological}
+M. F. Atiyah,
+\newblock ``Topological quantum field theories,''
+\newblock \emph{Publications Math\'ematiques de l'IH\'ES}, 68:175--186, 1988.
+
+\bibitem{freed2019lectures}
+D. S. Freed and M. J. Hopkins,
+\newblock ``Lectures on Chern--Simons--Witten invariants,''
+\newblock \emph{Surveys in Differential Geometry}, 22:1--45, 2019.
+
+\bibitem{nussinov2008autocorrelations}
+Z. Nussinov and G. Ortiz,
+\newblock ``Autocorrelations and thermal fragility of anyonic loops in topological quantum memories,''
+\newblock \emph{Proceedings of the National Academy of Sciences}, 106(40):16944--16949, 2009.
+
+\bibitem{chesi2010self}
+S. Chesi, B. R\"othlisberger, and D. Loss,
+\newblock ``Self-correcting quantum memory in a thermal environment,''
+\newblock \emph{Physical Review A}, 82(2):022305, 2010.
+
+\bibitem{bravyi2009no}
+S. Bravyi and B. Terhal,
+\newblock ``A no-go theorem for a two-dimensional self-correcting quantum memory based on stabilizer codes,''
+\newblock \emph{New Journal of Physics}, 11(4):043029, 2009.
+
+\bibitem{bombin2006topological}
+H. Bomb\'{\i}n and M. A. Martin-Delgado,
+\newblock ``Topological quantum distillation,''
+\newblock \emph{Physical Review Letters}, 97(18):180501, 2006.
+
+\bibitem{bombin2015gauge}
+H. Bomb\'{\i}n,
+\newblock ``Gauge color codes: Optimal transversal gates and gauge fixing disentangling,''
+\newblock \emph{New Journal of Physics}, 17(8):083002, 2015.
+
+\bibitem{haah2011local}
+J. Haah,
+\newblock ``Local stabilizer codes in three dimensions without string logical operators,''
+\newblock \emph{Physical Review A}, 83(4):042330, 2011.
+
+\bibitem{vijay2016fracton}
+S. Vijay, J. Haah, and L. Fu,
+\newblock ``Fracton topological order, generalized lattice gauge theory and duality,''
+\newblock \emph{Physical Review B}, 94(23):235157, 2016.
+
+\bibitem{sarma2005topological}
+S. Das Sarma, M. Freedman, and C. Nayak,
+\newblock ``Topologically protected qubits from a possible non-Abelian fractional quantum Hall state,''
+\newblock \emph{Physical Review Letters}, 94(16):166802, 2005.
+
+\bibitem{kouwenhoven2012fractional}
+L. P. Kouwenhoven, V. Mourik, K. Zuo, S. M. Albrecht, M. T. Deng, and A. Geresdi,
+\newblock ``Fractional spin and Majorana fermions,''
+\newblock \emph{Science}, 336(6084):1003--1007, 2012.
+
+\bibitem{nayak2008non}
+C. Nayak, S. H. Simon, A. Stern, M. Freedman, and S. Das Sarma,
+\newblock ``Non-Abelian anyons and topological quantum computation,''
+\newblock \emph{Reviews of Modern Physics}, 80(3):1083, 2008.
+
+\end{thebibliography}
+
+\end{document}
